@@ -26,9 +26,9 @@ public class Booking implements Callable<BookingResult> {
 	private NuberDispatch dispatch;
 	private Passenger passenger;
 	private Driver driver;
-	private int bookingId;
-	
+	private int bookingId = 0;
 		
+	
 	/**
 	 * Creates a new booking for a given Nuber dispatch and passenger, noting that no
 	 * driver is provided as it will depend on whether one is available when the region 
@@ -40,7 +40,7 @@ public class Booking implements Callable<BookingResult> {
 	public Booking(NuberDispatch dispatch, Passenger passenger)
 	{
 		this.dispatch = dispatch;
-		this.passenger = passenger;
+		this.passenger = passenger;			
 	}
 	
 	
@@ -63,15 +63,16 @@ public class Booking implements Callable<BookingResult> {
 	 */
 	public BookingResult call() {
 		
-		bookingId = (int) Thread.currentThread().getId();
-		
 		// Ask dispatch for a driver. Dispatch has a blocking queue so will wait if no driver available.
+		dispatch.logEvent(this, "Starting booking, getting driver");
 		driver = dispatch.getDriver();
 		
 		// Driver found. Record start time and start journey.
+		dispatch.logEvent(this, "Driver found. Starting, on way to passenger");
 		long startTime = new Date().getTime();
 		driver.pickUpPassenger(passenger);	
 		
+		dispatch.logEvent(this, "Collected passenger, on way to destination");
 		driver.driveToDestination();
 			
 		// Journey finished. Record finish time and total duration.
@@ -81,10 +82,11 @@ public class Booking implements Callable<BookingResult> {
 		BookingResult bookingResult = new BookingResult(bookingId, passenger, driver, tripDuration);
 		
 		// Driver now free. Add the driver back to dispatch list of available drivers.
+		dispatch.logEvent(this, "At destination, driver is now free");
 		dispatch.addDriver(driver);
 		
-		return bookingResult;
 		
+		return bookingResult;
 	}
 	
 	
@@ -110,5 +112,10 @@ public class Booking implements Callable<BookingResult> {
 	
 		return bookingId + ": " + driverName + ": " + passengerName;
 	}
-
+	
+	
+	public void setBookingId(int bookingId) {
+		this.bookingId = bookingId;
+	}
+	
 }

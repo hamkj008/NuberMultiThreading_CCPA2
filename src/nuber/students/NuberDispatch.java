@@ -16,8 +16,9 @@ public class NuberDispatch {
 
 	// The maximum number of idle drivers that can be awaiting a booking 
 	private final int MAX_DRIVERS = 999;
+	
 	private boolean logEvents = true;
-	private NuberRegion[] region;
+	private NuberRegion[] regionsArray;
 	private final BlockingQueue<Driver> queue;
 	private boolean acceptingBookings = true;
 	
@@ -34,15 +35,14 @@ public class NuberDispatch {
 		this.logEvents = logEvents;
 		
 		queue = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
-		region = new NuberRegion[regionInfo.size()];
+		regionsArray = new NuberRegion[regionInfo.size()];
 		int i = 0;
 		
 		for(Map.Entry<String, Integer> entry : regionInfo.entrySet()) {
-			region[i] = new NuberRegion(this, entry.getKey(), entry.getValue());
+			regionsArray[i] = new NuberRegion(this, entry.getKey(), entry.getValue());
 			i++;
 		}
-		
-		
+			
 	}
 	
 	
@@ -79,14 +79,12 @@ public class NuberDispatch {
 		
 		if(queue.peek() != null) {
 			d = queue.poll();
-//			System.out.println("Driver found");
 		}
 //		else {
 //			System.out.println("Queue is empty. No driver available");
 //		}
 //		
-		return d;
-		
+		return d;		
 	}
 
 	
@@ -101,7 +99,6 @@ public class NuberDispatch {
 	 */
 	public synchronized void logEvent(Booking booking, String message) 
 	{
-		
 		if (!logEvents) return;
 		
 		System.out.println(booking + ": " + message);
@@ -125,15 +122,14 @@ public class NuberDispatch {
 		Future<BookingResult> future = null;
 		
 		if(acceptingBookings) {
-			for(int i = 0; i < this.region.length; i++) {
-				if(this.region[i].getRegionName() == region) {
-					future = this.region[i].bookPassenger(passenger);
+			for(int i = 0; i < this.regionsArray.length; i++) {
+				if(this.regionsArray[i].getRegionName() == region) {
+					future = this.regionsArray[i].bookPassenger(passenger);
 				}
 			}
 		}
 		
-		return future;
-		
+		return future;	
 	}
 
 	
@@ -148,7 +144,7 @@ public class NuberDispatch {
 	public int getBookingsAwaitingDriver()
 	{
 		
-		for(int i = 0; i < this.region.length; i++) {
+		for(int i = 0; i < this.regionsArray.length; i++) {
 			
 		}
 		return 0;
@@ -161,8 +157,8 @@ public class NuberDispatch {
 	 */
 	public synchronized void shutdown() 
 	{
-		for(int i = 0; i < this.region.length; i++) {
-			this.region[i].shutdown();
+		for(int i = 0; i < this.regionsArray.length; i++) {
+			this.regionsArray[i].shutdown();
 		}
 		
 		acceptingBookings = false;

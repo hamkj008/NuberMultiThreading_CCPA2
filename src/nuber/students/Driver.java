@@ -25,12 +25,12 @@ public class Driver extends Person {
 	public synchronized void pickUpPassenger(Passenger newPassenger)
 	{
 		this.currentPassenger = newPassenger;		
-		int pickupTime = randomWithRange(0, maxSleep);
+		int pickupDuration = randomWithRange(0, maxSleep);
 		
 		try {	
-			System.out.println("Passenger name is " + newPassenger.name);
-			System.out.println("Pickup time is " + pickupTime);
-			Thread.sleep(pickupTime);
+//			System.out.println("Passenger name is " + newPassenger.name);
+//			System.out.println("Pickup duration is " + pickupDuration);
+			Thread.sleep(pickupDuration);
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();

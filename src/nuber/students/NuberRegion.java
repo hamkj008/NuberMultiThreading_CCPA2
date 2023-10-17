@@ -20,9 +20,11 @@ import java.util.concurrent.Future;
  */
 public class NuberRegion {
 
+	
 	private NuberDispatch dispatch;
 	private ExecutorService pool;
 	private String regionName;
+	private static int jobId = 0;
 	
 	/**
 	 * Creates a new Nuber region
@@ -36,10 +38,10 @@ public class NuberRegion {
 		this.dispatch = dispatch;
 		this.regionName = regionName;
 		this.pool = Executors.newFixedThreadPool(maxSimultaneousJobs);
-		
-		
-
+				
 	}
+	
+	
 	
 	/**
 	 * Creates a booking for given passenger, and adds the booking to the 
@@ -54,8 +56,12 @@ public class NuberRegion {
 	 */
 	public Future<BookingResult> bookPassenger(Passenger waitingPassenger)
 	{
+		Booking booking = new Booking(dispatch, waitingPassenger);
+		jobId = jobId + 1;
+		booking.setBookingId(jobId);
+		dispatch.logEvent(booking, "creating booking");
 		
-		Future<BookingResult> future = pool.submit(new Booking(dispatch, waitingPassenger));
+		Future<BookingResult> future = pool.submit(booking);
 		
 		return future;
 	}
@@ -75,8 +81,5 @@ public class NuberRegion {
 		return regionName;
 	}
 
-	
-	
-	
 		
 }
