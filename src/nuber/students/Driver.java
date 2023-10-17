@@ -27,7 +27,8 @@ public class Driver extends Person {
 		this.currentPassenger = newPassenger;		
 		int pickupTime = randomWithRange(0, maxSleep);
 		
-		try {		
+		try {	
+			System.out.println("Passenger name is " + newPassenger.name);
 			System.out.println("Pickup time is " + pickupTime);
 			Thread.sleep(pickupTime);
 			
@@ -63,6 +64,7 @@ public class Driver extends Person {
 		int range = (max - min) + 1;
 		return (int)(Math.random() * range) + min;
 	}
+
 
 
 }

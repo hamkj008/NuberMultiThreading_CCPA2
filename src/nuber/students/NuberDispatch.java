@@ -1,23 +1,25 @@
 package nuber.students;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
+
 
 /**
  * The core Dispatch class that instantiates and manages everything for Nuber
  * @author james
  */
 public class NuberDispatch {
-
-	
-	private SynchronousQueue<Driver> sq;
 	
 
 	// The maximum number of idle drivers that can be awaiting a booking 
 	private final int MAX_DRIVERS = 999;
 	private boolean logEvents = true;
-	
+	private NuberRegion[] region;
+	private final BlockingQueue<Driver> queue;
+	private boolean acceptingBookings = true;
 	
 	
 	/**
@@ -29,7 +31,16 @@ public class NuberDispatch {
 	 */
 	public NuberDispatch(HashMap<String, Integer> regionInfo, boolean logEvents)
 	{
-		sq = new SynchronousQueue<Driver>();
+		this.logEvents = logEvents;
+		
+		queue = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
+		region = new NuberRegion[regionInfo.size()];
+		int i = 0;
+		
+		for(Map.Entry<String, Integer> entry : regionInfo.entrySet()) {
+			region[i] = new NuberRegion(this, entry.getKey(), entry.getValue());
+			i++;
+		}
 		
 		
 	}
@@ -45,13 +56,13 @@ public class NuberDispatch {
 	 */
 	public synchronized boolean addDriver(Driver newDriver)
 	{
-		try {
-			sq.put(newDriver);
+		if(newDriver != null) {
+			queue.offer(newDriver);
 			return true;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
-		return false;
+		else {
+			return false;
+		}	
 	}
 	
 	
@@ -64,9 +75,18 @@ public class NuberDispatch {
 	 */
 	public synchronized Driver getDriver()
 	{
-		Driver d = new Driver(Person.getRandomName(), 3);
+		Driver d = null;
 		
+		if(queue.peek() != null) {
+			d = queue.poll();
+//			System.out.println("Driver found");
+		}
+//		else {
+//			System.out.println("Queue is empty. No driver available");
+//		}
+//		
 		return d;
+		
 	}
 
 	
@@ -100,11 +120,19 @@ public class NuberDispatch {
 	 * @param region The region to book them into
 	 * @return returns a Future<BookingResult> object
 	 */
-	public Future<BookingResult> bookPassenger(Passenger passenger, String region) 
+	public synchronized Future<BookingResult> bookPassenger(Passenger passenger, String region) 
 	{
+		Future<BookingResult> future = null;
 		
+		if(acceptingBookings) {
+			for(int i = 0; i < this.region.length; i++) {
+				if(this.region[i].getRegionName() == region) {
+					future = this.region[i].bookPassenger(passenger);
+				}
+			}
+		}
 		
-		return null;
+		return future;
 		
 	}
 
@@ -119,6 +147,10 @@ public class NuberDispatch {
 	 */
 	public int getBookingsAwaitingDriver()
 	{
+		
+		for(int i = 0; i < this.region.length; i++) {
+			
+		}
 		return 0;
 	}
 	
@@ -129,6 +161,11 @@ public class NuberDispatch {
 	 */
 	public synchronized void shutdown() 
 	{
+		for(int i = 0; i < this.region.length; i++) {
+			this.region[i].shutdown();
+		}
+		
+		acceptingBookings = false;
 		
 	}
 

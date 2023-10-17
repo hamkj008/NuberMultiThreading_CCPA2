@@ -1,7 +1,5 @@
 package nuber.students;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -59,7 +57,6 @@ public class NuberRegion {
 		
 		Future<BookingResult> future = pool.submit(new Booking(dispatch, waitingPassenger));
 		
-		
 		return future;
 	}
 	
@@ -70,8 +67,16 @@ public class NuberRegion {
 	 */
 	public void shutdown()
 	{
-		
+		pool.shutdown();
 		
 	}
+
+	public String getRegionName() {
+		return regionName;
+	}
+
+	
+	
+	
 		
 }

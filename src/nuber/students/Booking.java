@@ -1,5 +1,6 @@
 package nuber.students;
 
+import java.util.Date;
 import java.util.concurrent.Callable;
 
 /**
@@ -25,6 +26,7 @@ public class Booking implements Callable<BookingResult> {
 	private NuberDispatch dispatch;
 	private Passenger passenger;
 	private Driver driver;
+	private int bookingId;
 	
 		
 	/**
@@ -61,15 +63,28 @@ public class Booking implements Callable<BookingResult> {
 	 */
 	public BookingResult call() {
 		
+		bookingId = (int) Thread.currentThread().getId();
 		
-		driver  = dispatch.getDriver();
+		// Ask dispatch for a driver. Dispatch has a blocking queue so will wait if no driver available.
+		driver = dispatch.getDriver();
 		
-		driver.pickUpPassenger(passenger);
+		// Driver found. Record start time and start journey.
+		long startTime = new Date().getTime();
+		driver.pickUpPassenger(passenger);	
+		
 		driver.driveToDestination();
+			
+		// Journey finished. Record finish time and total duration.
+		long finishTime = new Date().getTime();
+		long tripDuration = finishTime - startTime;
 		
-		BookingResult booking = new BookingResult(5, passenger, driver, 2);
+		BookingResult bookingResult = new BookingResult(bookingId, passenger, driver, tripDuration);
 		
-		return booking;
+		// Driver now free. Add the driver back to dispatch list of available drivers.
+		dispatch.addDriver(driver);
+		
+		return bookingResult;
+		
 	}
 	
 	
@@ -90,9 +105,10 @@ public class Booking implements Callable<BookingResult> {
 	public String toString()
 	{
 		
-		long bookingId = Thread.currentThread().getId();
-		
-		return bookingId + ": " + driver.name + ": " + passenger.name;
+		String driverName = (driver == null) ? "null" : driver.name;
+		String passengerName = (passenger == null) ? "null" : passenger.name;
+	
+		return bookingId + ": " + driverName + ": " + passengerName;
 	}
 
 }

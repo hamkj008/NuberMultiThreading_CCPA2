@@ -1,5 +1,7 @@
 package nuber.students;
 
+
+
 public class BookingResult {
 
 	public int jobID;
