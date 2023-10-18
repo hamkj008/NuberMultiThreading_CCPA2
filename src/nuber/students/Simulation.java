@@ -58,6 +58,8 @@ public class Simulation {
 				//store the future to our list
 				bookings.add(f);
 			}
+			
+			System.out.println("Active bookings: " + bookings.size()+", pending: " + dispatch.getBookingsAwaitingDriver() + "\n");
 		}
 
 		// tell all the regions to run all pending passengers, and then shutdown
@@ -75,6 +77,7 @@ public class Simulation {
 			//go through each booking, and if it's done, remove it from our active bookings list
 			Iterator<Future<BookingResult>> i = bookings.iterator();
 			while (i.hasNext()) {
+				System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver());
 				Future<BookingResult> f = i.next();
 
 				if (f.isDone()) {
@@ -83,7 +86,7 @@ public class Simulation {
 			}
 
 			//print status update
-			System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver());
+			System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver() + "\n");
 
 			//sleep for 1s and then print out the current bookings
 			try {

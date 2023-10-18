@@ -64,27 +64,32 @@ public class Booking implements Callable<BookingResult> {
 	public BookingResult call() {
 		
 		// Ask dispatch for a driver. Dispatch has a blocking queue so will wait if no driver available.
-		dispatch.logEvent(this, "Starting booking, getting driver");
+		dispatch.logEvent(this, "Starting booking, getting driver");	
+	
 		driver = dispatch.getDriver();
-		
-		// Driver found. Record start time and start journey.
+
+		// Driver found. Record start time.
 		dispatch.logEvent(this, "Driver found. Starting, on way to passenger");
 		long startTime = new Date().getTime();
+		
+		
+		// Start journey
 		driver.pickUpPassenger(passenger);	
 		
+		// Drive to destination
 		dispatch.logEvent(this, "Collected passenger, on way to destination");
 		driver.driveToDestination();
 			
+		
 		// Journey finished. Record finish time and total duration.
 		long finishTime = new Date().getTime();
-		long tripDuration = finishTime - startTime;
-		
-		BookingResult bookingResult = new BookingResult(bookingId, passenger, driver, tripDuration);
+		long tripDuration = finishTime - startTime;		
 		
 		// Driver now free. Add the driver back to dispatch list of available drivers.
 		dispatch.logEvent(this, "At destination, driver is now free");
 		dispatch.addDriver(driver);
-		
+
+		BookingResult bookingResult = new BookingResult(bookingId, passenger, driver, tripDuration);
 		
 		return bookingResult;
 	}
@@ -112,6 +117,7 @@ public class Booking implements Callable<BookingResult> {
 	
 		return bookingId + ": " + driverName + ": " + passengerName;
 	}
+	
 	
 	
 	public void setBookingId(int bookingId) {

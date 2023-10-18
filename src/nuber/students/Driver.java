@@ -28,8 +28,7 @@ public class Driver extends Person {
 		int pickupDuration = randomWithRange(0, maxSleep);
 		
 		try {	
-//			System.out.println("Passenger name is " + newPassenger.name);
-//			System.out.println("Pickup duration is " + pickupDuration);
+//			System.out.println("Passenger: " + newPassenger.name + ". Pickup duration is " + pickupDuration);
 			Thread.sleep(pickupDuration);
 			
 		} catch (InterruptedException e) {
@@ -48,7 +47,7 @@ public class Driver extends Person {
 	public synchronized void driveToDestination() {
 		
 		try {
-			System.out.println("Travel time is " + this.currentPassenger.getTravelTime());
+//			System.out.println("Passenger: " + this.currentPassenger.name + ". Travel time is " + this.currentPassenger.getTravelTime());
 			Thread.sleep(this.currentPassenger.getTravelTime());
 			
 		} catch (InterruptedException e) {

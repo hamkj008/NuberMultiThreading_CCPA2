@@ -48,67 +48,6 @@ public class NuberDispatch {
 	
 	
 	/**
-	 * Adds drivers to a queue of idle driver.
-	 * Must be able to have drivers added from multiple threads.
-	 * 
-	 * @param The driver to add to the queue.
-	 * @return Returns true if driver was added to the queue
-	 */
-	public synchronized boolean addDriver(Driver newDriver)
-	{
-		if(newDriver != null) {
-			queue.offer(newDriver);
-			return true;
-		}
-		else {
-			return false;
-		}	
-	}
-	
-	
-	
-	/**
-	 * Gets a driver from the front of the queue.
-	 * Must be able to have drivers added from multiple threads.
-	 * 
-	 * @return A driver that has been removed from the queue
-	 */
-	public synchronized Driver getDriver()
-	{
-		Driver d = null;
-		
-		if(queue.peek() != null) {
-			d = queue.poll();
-		}
-//		else {
-//			System.out.println("Queue is empty. No driver available");
-//		}
-//		
-		return d;		
-	}
-
-	
-	
-	
-	/**
-	 * Prints out the string booking + ": " + message
-	 * to the standard output only if the logEvents variable passed into the constructor was true
-	 * 
-	 * @param booking The booking that's responsible for the event occurring
-	 * @param message The message to show
-	 */
-	public synchronized void logEvent(Booking booking, String message) 
-	{
-		if (!logEvents) return;
-		
-		System.out.println(booking + ": " + message);
-		
-	}
-
-	
-	
-	
-	/**
 	 * Books a given passenger into a given Nuber region.
 	 * Once a passenger is booked, the getBookingsAwaitingDriver() should be returning one higher.
 	 * If the region has been asked to shutdown, the booking should be rejected, and null returned.
@@ -128,13 +67,53 @@ public class NuberDispatch {
 				}
 			}
 		}
-		
 		return future;	
 	}
 
 	
 	
+	/**
+	 * Adds drivers to a queue of idle driver.
+	 * Must be able to have drivers added from multiple threads.
+	 * 
+	 * @param The driver to add to the queue.
+	 * @return Returns true if driver was added to the queue
+	 */
+	public synchronized boolean addDriver(Driver newDriver)
+	{
+		if(newDriver != null) {
+			queue.offer(newDriver);
+			notifyAll();
+			return true;
+		}
+		else {
+			return false;
+		}	
+	}
 	
+	
+	
+	/**
+	 * Gets a driver from the front of the queue.
+	 * Must be able to have drivers added from multiple threads.
+	 * 
+	 * @return A driver that has been removed from the queue
+	 */
+	public synchronized Driver getDriver()
+	{
+		while(queue.peek() == null) {
+			try {
+				wait();
+				
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return queue.poll();	
+	}
+	
+	
+
 	/**
 	 * Gets the number of non-completed bookings that are awaiting a driver from dispatch
 	 * Once a driver is given to a booking, the value in this counter should be reduced by one
@@ -143,7 +122,7 @@ public class NuberDispatch {
 	 */
 	public int getBookingsAwaitingDriver()
 	{
-		
+		int size = 0;
 		for(int i = 0; i < this.regionsArray.length; i++) {
 			
 		}
@@ -162,6 +141,23 @@ public class NuberDispatch {
 		}
 		
 		acceptingBookings = false;
+		
+	}
+	
+	
+	
+	/**
+	 * Prints out the string booking + ": " + message
+	 * to the standard output only if the logEvents variable passed into the constructor was true
+	 * 
+	 * @param booking The booking that's responsible for the event occurring
+	 * @param message The message to show
+	 */
+	public synchronized void logEvent(Booking booking, String message) 
+	{
+		if (!logEvents) return;
+		
+		System.out.println(booking + ": " + message + "\n");
 		
 	}
 

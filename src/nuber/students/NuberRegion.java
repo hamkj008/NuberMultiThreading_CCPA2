@@ -55,11 +55,11 @@ public class NuberRegion {
 	 * @return a Future that will provide the final BookingResult object from the completed booking
 	 */
 	public Future<BookingResult> bookPassenger(Passenger waitingPassenger)
-	{
+	{		
 		Booking booking = new Booking(dispatch, waitingPassenger);
 		jobId = jobId + 1;
 		booking.setBookingId(jobId);
-		dispatch.logEvent(booking, "creating booking");
+		dispatch.logEvent(booking, "CREATING BOOKING");
 		
 		Future<BookingResult> future = pool.submit(booking);
 		
