@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
 
 public class Simulation {
@@ -57,9 +56,8 @@ public class Simulation {
 			{
 				//store the future to our list
 				bookings.add(f);
-			}
-			
-			System.out.println("Active bookings: " + bookings.size()+", pending: " + dispatch.getBookingsAwaitingDriver() + "\n");
+//				System.out.println("Active bookings: " + bookings.size()+", pending: " + dispatch.getBookingsAwaitingDriver() + "\n");
+			}	
 		}
 
 		// tell all the regions to run all pending passengers, and then shutdown
@@ -77,7 +75,7 @@ public class Simulation {
 			//go through each booking, and if it's done, remove it from our active bookings list
 			Iterator<Future<BookingResult>> i = bookings.iterator();
 			while (i.hasNext()) {
-				System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver());
+//			System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver());
 				Future<BookingResult> f = i.next();
 
 				if (f.isDone()) {

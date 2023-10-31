@@ -18,9 +18,12 @@ public class NuberDispatch {
 	private final int MAX_DRIVERS = 999;
 	
 	private boolean logEvents = true;
-	private NuberRegion[] regionsArray;
-	private final BlockingQueue<Driver> queue;
+	public NuberRegion[] regionsArray;
+	public final BlockingQueue<Driver> queue;
 	private boolean acceptingBookings = true;
+	
+	public int pendingJobs = 0;
+
 	
 	
 	/**
@@ -34,15 +37,15 @@ public class NuberDispatch {
 	{
 		this.logEvents = logEvents;
 		
+		// Queue size set to the max amount of drivers. Queue will block if full.
 		queue = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
 		regionsArray = new NuberRegion[regionInfo.size()];
-		int i = 0;
 		
+		int i = 0;		
 		for(Map.Entry<String, Integer> entry : regionInfo.entrySet()) {
 			regionsArray[i] = new NuberRegion(this, entry.getKey(), entry.getValue());
 			i++;
-		}
-			
+		}		
 	}
 	
 	
@@ -109,6 +112,8 @@ public class NuberDispatch {
 				e.printStackTrace();
 			}
 		}
+		
+		logPendingJob(false);
 		return queue.poll();	
 	}
 	
@@ -120,13 +125,9 @@ public class NuberDispatch {
 	 * 
 	 * @return Number of bookings awaiting driver, across ALL regions
 	 */
-	public int getBookingsAwaitingDriver()
+	public synchronized int getBookingsAwaitingDriver()
 	{
-		int size = 0;
-		for(int i = 0; i < this.regionsArray.length; i++) {
-			
-		}
-		return 0;
+		return pendingJobs;
 	}
 	
 	
@@ -159,6 +160,17 @@ public class NuberDispatch {
 		
 		System.out.println(booking + ": " + message + "\n");
 		
+	}
+	
+	
+	
+	public synchronized void logPendingJob(boolean addOrSubtract) {
+		if(addOrSubtract) {
+			pendingJobs++;			
+		}
+		else {
+			pendingJobs--;
+		}
 	}
 
 }

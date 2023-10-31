@@ -23,7 +23,7 @@ public class NuberRegion {
 	
 	private NuberDispatch dispatch;
 	private ExecutorService pool;
-	private String regionName;
+	public String regionName;
 	private static int jobId = 0;
 	
 	/**
@@ -59,9 +59,12 @@ public class NuberRegion {
 		Booking booking = new Booking(dispatch, waitingPassenger);
 		jobId = jobId + 1;
 		booking.setBookingId(jobId);
-		dispatch.logEvent(booking, "CREATING BOOKING");
+		dispatch.logPendingJob(true);
+		dispatch.logEvent(booking, "CREATING BOOKING. Pending: " + dispatch.pendingJobs);
 		
-		Future<BookingResult> future = pool.submit(booking);
+		// Submit the booking to the thread pool
+		Future<BookingResult> future = pool.submit(booking);		
+		
 		
 		return future;
 	}

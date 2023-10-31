@@ -69,9 +69,9 @@ public class Booking implements Callable<BookingResult> {
 		driver = dispatch.getDriver();
 
 		// Driver found. Record start time.
-		dispatch.logEvent(this, "Driver found. Starting, on way to passenger");
+		dispatch.logEvent(this, "DRIVER FOUND!! Starting, on way to passenger." + " Pending: " + dispatch.pendingJobs);
 		long startTime = new Date().getTime();
-		
+		System.out.println();
 		
 		// Start journey
 		driver.pickUpPassenger(passenger);	
@@ -83,15 +83,14 @@ public class Booking implements Callable<BookingResult> {
 		
 		// Journey finished. Record finish time and total duration.
 		long finishTime = new Date().getTime();
-		long tripDuration = finishTime - startTime;		
+		long tripDuration = finishTime - startTime;	
+		System.out.println("Trip Duration was: " + tripDuration);
 		
 		// Driver now free. Add the driver back to dispatch list of available drivers.
 		dispatch.logEvent(this, "At destination, driver is now free");
 		dispatch.addDriver(driver);
-
-		BookingResult bookingResult = new BookingResult(bookingId, passenger, driver, tripDuration);
 		
-		return bookingResult;
+		return new BookingResult(bookingId, passenger, driver, tripDuration);
 	}
 	
 	

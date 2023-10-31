@@ -4,8 +4,7 @@ package nuber.students;
 
 public class Driver extends Person {
 
-	private Passenger currentPassenger;
-	
+	public Passenger currentPassenger;
 	
 	
 	public Driver(String driverName, int maxSleep)
@@ -28,7 +27,6 @@ public class Driver extends Person {
 		int pickupDuration = randomWithRange(0, maxSleep);
 		
 		try {	
-//			System.out.println("Passenger: " + newPassenger.name + ". Pickup duration is " + pickupDuration);
 			Thread.sleep(pickupDuration);
 			
 		} catch (InterruptedException e) {
@@ -47,7 +45,6 @@ public class Driver extends Person {
 	public synchronized void driveToDestination() {
 		
 		try {
-//			System.out.println("Passenger: " + this.currentPassenger.name + ". Travel time is " + this.currentPassenger.getTravelTime());
 			Thread.sleep(this.currentPassenger.getTravelTime());
 			
 		} catch (InterruptedException e) {
@@ -58,7 +55,7 @@ public class Driver extends Person {
 	
 	
 
-	public static int randomWithRange(int min, int max)
+	public synchronized int randomWithRange(int min, int max)
 	{
 		int range = (max - min) + 1;
 		return (int)(Math.random() * range) + min;
