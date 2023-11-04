@@ -171,7 +171,7 @@ public class NuberDispatch {
 	{
 		if (!logEvents) return;
 		
-		System.out.println(booking + ": " + message + "\n");		
+		System.out.println(booking + ": " + message);		
 	}
 	
 	
