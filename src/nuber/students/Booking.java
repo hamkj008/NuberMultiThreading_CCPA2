@@ -39,6 +39,7 @@ public class Booking implements Callable<BookingResult> {
 	 */
 	public Booking(NuberDispatch dispatch, Passenger passenger)
 	{
+		// Assign the booking/jobID created by dispatch.
 		bookingId = dispatch.getJobId();		
 		dispatch.logEvent(this, "Creating booking");
 		
@@ -66,15 +67,14 @@ public class Booking implements Callable<BookingResult> {
 	 */
 	public BookingResult call() {
 		
-		// Ask dispatch for a driver. Dispatch has a blocking queue so will wait if no driver available.
+		// Ask dispatch for a driver. 
 		dispatch.logEvent(this, "Starting booking, getting driver");	
 	
 		driver = dispatch.getDriver();
 
 		// Driver found. Record start time.
-		dispatch.logEvent(this, "DRIVER FOUND!! Starting, on way to passenger." + " Pending: " + dispatch.pendingJobs);
+		dispatch.logEvent(this, "Driver found. Starting, on way to passenger.");
 		long startTime = new Date().getTime();
-		System.out.println();
 		
 		// Start journey
 		driver.pickUpPassenger(passenger);	
@@ -87,7 +87,6 @@ public class Booking implements Callable<BookingResult> {
 		// Journey finished. Record finish time and total duration.
 		long finishTime = new Date().getTime();
 		long tripDuration = finishTime - startTime;	
-		System.out.println("Trip Duration was: " + tripDuration);
 		
 		// Driver now free. Add the driver back to dispatch list of available drivers.
 		dispatch.logEvent(this, "At destination, driver is now free");

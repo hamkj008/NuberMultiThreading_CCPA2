@@ -5,7 +5,7 @@ package nuber.students;
 public class Driver extends Person {
 
 	
-	public Passenger currentPassenger;
+	private Passenger currentPassenger;
 	
 	
 	public Driver(String driverName, int maxSleep)
@@ -24,7 +24,7 @@ public class Driver extends Person {
 	 */
 	public synchronized void pickUpPassenger(Passenger newPassenger)
 	{
-		this.currentPassenger = newPassenger;		
+		currentPassenger = newPassenger;		
 		int pickupDuration = randomWithRange(0, maxSleep);
 		
 		try {	
@@ -46,7 +46,7 @@ public class Driver extends Person {
 	public synchronized void driveToDestination() {
 		
 		try {
-			Thread.sleep(this.currentPassenger.getTravelTime());
+			Thread.sleep(currentPassenger.getTravelTime());
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();

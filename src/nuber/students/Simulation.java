@@ -49,7 +49,6 @@ public class Simulation {
 			
 			//choose a random region to assign this person
 			String randomRegion = regionNames[new Random().nextInt(regionNames.length)];
-			System.out.println("Region is: " + randomRegion + "\n");
 			
 			//add each passenger to dispatch to book their travel for a random region
 			Future<BookingResult> f = dispatch.bookPassenger(p, randomRegion);
@@ -75,7 +74,6 @@ public class Simulation {
 			//go through each booking, and if it's done, remove it from our active bookings list
 			Iterator<Future<BookingResult>> i = bookings.iterator();
 			while (i.hasNext()) {
-//			System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver());
 				Future<BookingResult> f = i.next();
 
 				if (f.isDone()) {

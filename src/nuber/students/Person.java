@@ -9,8 +9,7 @@ public abstract class Person
 	private static int nextNameIndex = 0;
 	
 	public String name;
-//	protected int maxSleep;
-	public int maxSleep;
+	protected int maxSleep;
 	
 	
 	public Person(String name,int maxSleep) {

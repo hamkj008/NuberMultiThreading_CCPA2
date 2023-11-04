@@ -18,11 +18,11 @@ public class NuberDispatch {
 	private final int MAX_DRIVERS = 999;
 	
 	private boolean logEvents = true;
-	public NuberRegion[] regionsArray;
-	public final BlockingQueue<Driver> queue;
+	private NuberRegion[] regionsArray;
+	private final BlockingQueue<Driver> queue;
 	
 	private static int jobId = 0;
-	public int pendingJobs = 0;
+	private int pendingJobs = 0;
 	private boolean acceptingBookings = true;
 	
 	
@@ -75,10 +75,11 @@ public class NuberDispatch {
 				
 		// Book passenger into the correct region
 		if(acceptingBookings) {
-			for(int i = 0; i < this.regionsArray.length; i++) {
-				if(this.regionsArray[i].getRegionName() == region) {
+			for(int i = 0; i < regionsArray.length; i++) {
+				if(regionsArray[i].getRegionName() == region) {
+					logPendingJob(true);
 					jobId = jobId + 1;
-					future = this.regionsArray[i].bookPassenger(passenger);
+					future = regionsArray[i].bookPassenger(passenger);
 				}
 			}
 		}
@@ -96,6 +97,7 @@ public class NuberDispatch {
 	 */
 	public synchronized boolean addDriver(Driver newDriver)
 	{
+		// Add driver to the queue and notify all threads that driver has been found.
 		if(newDriver != null) {
 			queue.offer(newDriver);
 			notifyAll();
@@ -116,6 +118,7 @@ public class NuberDispatch {
 	 */
 	public synchronized Driver getDriver()
 	{
+		// If the queue is empty no drivers are available. Thread waits untill one is found.
 		while(queue.peek() == null) {
 			try {
 				wait();
@@ -124,7 +127,7 @@ public class NuberDispatch {
 				e.printStackTrace();
 			}
 		}
-		
+		// Driver found. Deduct a pending job from the count.
 		logPendingJob(false);
 		return queue.poll();	
 	}
@@ -147,7 +150,7 @@ public class NuberDispatch {
 	/**
 	 * Tells all regions to finish existing bookings already allocated, and stop accepting new bookings
 	 */
-	public synchronized void shutdown() 
+	public void shutdown() 
 	{
 		for(int i = 0; i < this.regionsArray.length; i++) {
 			this.regionsArray[i].shutdown();
@@ -168,15 +171,19 @@ public class NuberDispatch {
 	{
 		if (!logEvents) return;
 		
-		System.out.println(booking + ": " + message + "\n");
-		
+		System.out.println(booking + ": " + message + "\n");		
 	}
 	
 	
 	
-	public synchronized void logPendingJob(boolean addOrSubtract) {
+	/**
+	 * Adjusts the pending job counter if a job is pending.
+	 * Increments if boolean increment is true, else decrements.
+	 * @param increment
+	 */
+	public synchronized void logPendingJob(boolean increment) {
 		
-		if(addOrSubtract) {
+		if(increment) {
 			pendingJobs++;			
 		}
 		else {
@@ -186,6 +193,9 @@ public class NuberDispatch {
 	
 	
 	
+	/*
+	 * Booking objects will self-assign the jobID that dispatch has assigned to the booking.
+	 */
 	public int getJobId() {
 		return jobId;
 	}

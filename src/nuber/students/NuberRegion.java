@@ -23,7 +23,7 @@ public class NuberRegion {
 	
 	private NuberDispatch dispatch;
 	private ExecutorService pool;
-	public String regionName;
+	private String regionName;
 	private boolean acceptingBookings = true;
 	
 	
@@ -36,12 +36,14 @@ public class NuberRegion {
 	 */
 	public NuberRegion(NuberDispatch dispatch, String regionName, int maxSimultaneousJobs)
 	{
+		
 		System.out.println("Creating Region for " + regionName);
 		
 		this.dispatch = dispatch;
 		this.regionName = regionName;
-		this.pool = Executors.newFixedThreadPool(maxSimultaneousJobs);
-				
+		
+		// Each region manages its own thread pool of jobs.
+		this.pool = Executors.newFixedThreadPool(maxSimultaneousJobs);		
 	}
 	
 	
@@ -59,17 +61,16 @@ public class NuberRegion {
 	 */
 	public Future<BookingResult> bookPassenger(Passenger waitingPassenger)
 	{		
-		Booking booking = new Booking(dispatch, waitingPassenger);
-
-		dispatch.logPendingJob(true);
-		dispatch.logEvent(booking, "CREATING BOOKING. Pending: " + dispatch.pendingJobs);
 		
-		
+		Booking booking = new Booking(dispatch, waitingPassenger);			
 		Future<BookingResult> future = null;
 		
-		// Submit the booking to the thread pool
+		// Submit the booking to the thread pool or reject additional bookings.
 		if(acceptingBookings) {
 			future = pool.submit(booking);
+		}
+		else {
+			System.out.println("Booking rejected. This region is not accepting any more bookings.");
 		}
 			
 		return future;
@@ -86,6 +87,7 @@ public class NuberRegion {
 		acceptingBookings = false;
 	}
 
+	
 	
 	public String getRegionName() {
 		return regionName;

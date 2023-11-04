@@ -70,10 +70,8 @@ public class AssignmentDriver {
 		//once you have the above running, you should be able to uncomment the Simulations below to start to put everything together
 		
 		HashMap<String, Integer> regions = new HashMap<String, Integer>();
-		regions.put("North", 5);
-//		regions.put("South", 2);
-//		regions.put("East", 2);
-//		regions.put("West", 2);
+		regions.put("North", 50);
+		regions.put("South", 50);
 		
 		
 		
@@ -86,16 +84,11 @@ public class AssignmentDriver {
 		 * @param logEvents Whether to log booking events to the console
 		 **/
 		
-		System.out.println("\nNEW SIMULATION");
-		new Simulation(regions, 1, 11, 1000, logEvents);
-		System.out.println("\nNEW SIMULATION");
-		new Simulation(regions, 5, 10, 1000, logEvents);
-		System.out.println("\nNEW SIMULATION");
-		new Simulation(regions, 10, 10, 1000, logEvents);
-//		System.out.println("\nNEW SIMULATION");
-//		new Simulation(regions, 10, 100, 1000, logEvents);
-//		System.out.println("\nNEW SIMULATION");
-//		new Simulation(regions, 1, 50, 1000, logEvents);
+		new Simulation(regions, 1, 10, 10000, logEvents);
+		new Simulation(regions, 5, 10, 10000, logEvents);
+		new Simulation(regions, 10, 10, 10000, logEvents);
+		new Simulation(regions, 10, 100, 10000, logEvents);
+		new Simulation(regions, 1, 50, 10000, logEvents);
 	}
 
 }
