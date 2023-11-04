@@ -15,7 +15,7 @@ public class Simulation {
 	 * @param regions The region names and maximum simultaneous active bookings allowed in that region
 	 * @param maxDrivers The number of drivers to create
 	 * @param maxPassengers The number of passengers to create
-	 * @param maxSleep The maximum amount a thread will sleep (in millseconds)) to simulate driving to, or dropping off a passenger
+	 * @param maxSleep The maximum amount a thread will sleep (in milliseconds)) to simulate driving to, or dropping off a passenger
 	 * @param logEvents Whether to log booking events to the console
 	 * @throws Exception
 	 */
@@ -49,6 +49,7 @@ public class Simulation {
 			
 			//choose a random region to assign this person
 			String randomRegion = regionNames[new Random().nextInt(regionNames.length)];
+			System.out.println("Region is: " + randomRegion + "\n");
 			
 			//add each passenger to dispatch to book their travel for a random region
 			Future<BookingResult> f = dispatch.bookPassenger(p, randomRegion);
@@ -56,7 +57,6 @@ public class Simulation {
 			{
 				//store the future to our list
 				bookings.add(f);
-//				System.out.println("Active bookings: " + bookings.size()+", pending: " + dispatch.getBookingsAwaitingDriver() + "\n");
 			}	
 		}
 

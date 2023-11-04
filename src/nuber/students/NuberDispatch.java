@@ -20,10 +20,10 @@ public class NuberDispatch {
 	private boolean logEvents = true;
 	public NuberRegion[] regionsArray;
 	public final BlockingQueue<Driver> queue;
-	private boolean acceptingBookings = true;
 	
+	private static int jobId = 0;
 	public int pendingJobs = 0;
-
+	private boolean acceptingBookings = true;
 	
 	
 	/**
@@ -35,17 +35,27 @@ public class NuberDispatch {
 	 */
 	public NuberDispatch(HashMap<String, Integer> regionInfo, boolean logEvents)
 	{
+		
+		System.out.println("Creating Nuber Dispatch");
+		
 		this.logEvents = logEvents;
 		
 		// Queue size set to the max amount of drivers. Queue will block if full.
 		queue = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
 		regionsArray = new NuberRegion[regionInfo.size()];
 		
+		// Display number of regions
+		String regionPlurality = regionsArray.length > 1 ? "regions" : "region";	
+		System.out.println("Creating " + regionsArray.length + " " + regionPlurality);
+		
+		// Create Regions according to the map provided
 		int i = 0;		
 		for(Map.Entry<String, Integer> entry : regionInfo.entrySet()) {
 			regionsArray[i] = new NuberRegion(this, entry.getKey(), entry.getValue());
 			i++;
-		}		
+		}	
+		
+		System.out.println("Done creating " + regionsArray.length + " " + regionPlurality);
 	}
 	
 	
@@ -62,10 +72,12 @@ public class NuberDispatch {
 	public synchronized Future<BookingResult> bookPassenger(Passenger passenger, String region) 
 	{
 		Future<BookingResult> future = null;
-		
+				
+		// Book passenger into the correct region
 		if(acceptingBookings) {
 			for(int i = 0; i < this.regionsArray.length; i++) {
 				if(this.regionsArray[i].getRegionName() == region) {
+					jobId = jobId + 1;
 					future = this.regionsArray[i].bookPassenger(passenger);
 				}
 			}
@@ -125,7 +137,7 @@ public class NuberDispatch {
 	 * 
 	 * @return Number of bookings awaiting driver, across ALL regions
 	 */
-	public synchronized int getBookingsAwaitingDriver()
+	public int getBookingsAwaitingDriver()
 	{
 		return pendingJobs;
 	}
@@ -140,9 +152,7 @@ public class NuberDispatch {
 		for(int i = 0; i < this.regionsArray.length; i++) {
 			this.regionsArray[i].shutdown();
 		}
-		
 		acceptingBookings = false;
-		
 	}
 	
 	
@@ -154,7 +164,7 @@ public class NuberDispatch {
 	 * @param booking The booking that's responsible for the event occurring
 	 * @param message The message to show
 	 */
-	public synchronized void logEvent(Booking booking, String message) 
+	public void logEvent(Booking booking, String message) 
 	{
 		if (!logEvents) return;
 		
@@ -165,12 +175,19 @@ public class NuberDispatch {
 	
 	
 	public synchronized void logPendingJob(boolean addOrSubtract) {
+		
 		if(addOrSubtract) {
 			pendingJobs++;			
 		}
 		else {
 			pendingJobs--;
 		}
+	}
+	
+	
+	
+	public int getJobId() {
+		return jobId;
 	}
 
 }

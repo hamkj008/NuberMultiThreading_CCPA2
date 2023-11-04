@@ -35,9 +35,16 @@ class TestDriver {
 		assertEquals("Alex", testDriver.currentPassenger.name);			
 	}
 	
+	
 	@Test
 	void travelTime() {		
 		assertTrue(testDriver.randomWithRange(0, testDriver.maxSleep) <= testDriver.maxSleep);			
+	}
+	
+	
+	@Test
+	void passengerTime() {
+		assertTrue(testPassenger.getTravelTime() < testPassenger.maxSleep);
 	}
 	
 

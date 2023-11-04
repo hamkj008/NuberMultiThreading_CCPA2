@@ -4,6 +4,7 @@ package nuber.students;
 
 public class Driver extends Person {
 
+	
 	public Passenger currentPassenger;
 	
 	

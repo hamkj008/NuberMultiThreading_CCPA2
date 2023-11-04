@@ -39,6 +39,9 @@ public class Booking implements Callable<BookingResult> {
 	 */
 	public Booking(NuberDispatch dispatch, Passenger passenger)
 	{
+		bookingId = dispatch.getJobId();		
+		dispatch.logEvent(this, "Creating booking");
+		
 		this.dispatch = dispatch;
 		this.passenger = passenger;			
 	}
@@ -109,18 +112,11 @@ public class Booking implements Callable<BookingResult> {
 	 */
 	@Override
 	public String toString()
-	{
-		
+	{		
 		String driverName = (driver == null) ? "null" : driver.name;
 		String passengerName = (passenger == null) ? "null" : passenger.name;
 	
 		return bookingId + ": " + driverName + ": " + passengerName;
-	}
-	
-	
-	
-	public void setBookingId(int bookingId) {
-		this.bookingId = bookingId;
 	}
 	
 }

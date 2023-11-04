@@ -29,7 +29,7 @@ class TestDispatch {
 		testDriver = new Driver("Barbara", 100);
 		testPassenger = new Passenger("Alex", 100);
 	}
-	
+
 	
 	@Test
 	void testBooking() {
@@ -42,8 +42,7 @@ class TestDispatch {
 	void testAddBookingAfterShutdown() {
 		dispatch.bookPassenger(testPassenger, "North");
 		dispatch.shutdown();
-		assertNull(dispatch.bookPassenger(testPassenger, "North"));
-		
+		assertNull(dispatch.bookPassenger(testPassenger, "North"));		
 	}
 	
 	
