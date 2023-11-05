@@ -19,6 +19,9 @@ public class NuberDispatch {
 	
 	private boolean logEvents = true;
 	private NuberRegion[] regionsArray;
+	
+	// Array blocking queue chosen for fixed size, additional guarantees of thread safety and possible extensibility. 
+	// Offer() and poll() used instead of put() and take() because of return values and felt it was clearer to implement blocking more explicitly by using wait().
 	private final BlockingQueue<Driver> queue;
 	
 	private static int jobId = 0;
@@ -97,15 +100,21 @@ public class NuberDispatch {
 	 */
 	public synchronized boolean addDriver(Driver newDriver)
 	{
-		// Add driver to the queue and notify all threads that driver has been found.
-		if(newDriver != null) {
-			queue.offer(newDriver);
+		if(newDriver == null) {
+			System.out.println("Driver can't be added to queue because it is null");
+			return false;
+		}
+		
+		// If offer() succeeds, queue has free spot. Add driver to the queue and notify all threads that driver has been found.
+		if(queue.offer(newDriver)) {
 			notifyAll();
 			return true;
 		}
+		// Can't add driver to full queue
 		else {
+			System.out.println("Maximum number of drivers exceeded! The driver could not be added to the queue because it is full");	
 			return false;
-		}	
+		}
 	}
 	
 	

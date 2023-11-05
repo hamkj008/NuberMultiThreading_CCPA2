@@ -71,26 +71,26 @@ public class Booking implements Callable<BookingResult> {
 		dispatch.logEvent(this, "Starting booking, getting driver");	
 	
 		driver = dispatch.getDriver();
-
+		
 		// Driver found. Record start time.
 		dispatch.logEvent(this, "Driver found. Starting, on way to passenger.");
 		long startTime = new Date().getTime();
-		
+			
 		// Start journey
 		driver.pickUpPassenger(passenger);	
-		
+			
 		// Drive to destination
 		dispatch.logEvent(this, "Collected passenger, on way to destination");
 		driver.driveToDestination();
+				
 			
-		
 		// Journey finished. Record finish time and total duration.
 		long finishTime = new Date().getTime();
 		long tripDuration = finishTime - startTime;	
-		
+			
 		// Driver now free. Add the driver back to dispatch list of available drivers.
-		dispatch.logEvent(this, "At destination, driver is now free");
-		dispatch.addDriver(driver);
+		dispatch.logEvent(this, "At destination, driver is now free");			
+		dispatch.addDriver(driver);	
 		
 		return new BookingResult(bookingId, passenger, driver, tripDuration);
 	}

@@ -70,15 +70,6 @@ public class AssignmentDriver {
 		
 		
 		
-		
-		 /** 
-		 * @param regions The region names and maximum simultaneous active bookings allowed in that region
-		 * @param maxDrivers The number of drivers to create
-		 * @param maxPassengers The number of passengers to create
-		 * @param maxSleep The maximum amount a thread will sleep (in millseconds)) to simulate driving to, or dropping off a passenger
-		 * @param logEvents Whether to log booking events to the console
-		 **/
-		
 		new Simulation(regions, 1, 10, 1000, logEvents);
 		new Simulation(regions, 5, 10, 1000, logEvents);
 		new Simulation(regions, 10, 10, 1000, logEvents);
