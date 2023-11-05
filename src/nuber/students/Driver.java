@@ -43,7 +43,7 @@ public class Driver extends Person {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public synchronized void driveToDestination() {
+	public void driveToDestination() {
 		
 		try {
 			Thread.sleep(currentPassenger.getTravelTime());
@@ -56,7 +56,7 @@ public class Driver extends Person {
 	
 	
 
-	public synchronized int randomWithRange(int min, int max)
+	public int randomWithRange(int min, int max)
 	{
 		int range = (max - min) + 1;
 		return (int)(Math.random() * range) + min;
